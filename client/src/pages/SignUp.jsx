@@ -1,16 +1,40 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      setLoading(true);
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        setLoading(false);
+        setError(data.message);
+        return;
+      }
+      setLoading(false);
+      setError(null);
+      navigate('/sign-in');
+    } catch (error) {
+      setLoading(false);
+      setError(error.message);
+    }
   };
 
   return (
@@ -45,13 +69,14 @@ const SignUp = () => {
           className='rounded-lg p-3 bg-slate-500 text-white uppercase hover:opacity-80 disabled:opacity-50'>
           {loading ? 'Loading...' : 'Sign up'}
         </button>
-        <div className='flex items-center'>
-          <p>Have an account?</p>
-          <Link to={'/sign-in'}>
-            <span className='text-lime-600'>Sign in</span>
-          </Link>
-        </div>
       </form>
+      <div className='flex items-center'>
+        <p>Have an account?</p>
+        <Link to={'/sign-in'}>
+          <span className='text-lime-600'> Sign in</span>
+        </Link>
+      </div>
+      {error && <p className='text-orange-400 mt-5'>{error}</p>}
     </div>
   );
 };
