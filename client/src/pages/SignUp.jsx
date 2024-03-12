@@ -70,7 +70,7 @@ const SignUp = () => {
           {loading ? 'Loading...' : 'Sign up'}
         </button>
       </form>
-      <div className='flex items-center'>
+      <div className='flex items-center gap-2 mt-2'>
         <p>Have an account?</p>
         <Link to={'/sign-in'}>
           <span className='text-lime-600'> Sign in</span>
