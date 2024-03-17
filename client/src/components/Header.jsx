@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState([]);
+  const { currentUser } = useSelector((state) => state.user);
   const handleSubmit = () => {};
   return (
     <header className='bg-slate-200 shadow-md'>
@@ -36,15 +38,15 @@ const Header = () => {
             <li className='hidden sm:inline hover:underline'>About</li>
           </Link>
           <Link to='/profile'>
-            {/* {currentUser ? (
+            {currentUser ? (
               <img
                 src={currentUser.avatar}
                 alt='profile'
-                className='w-10 h-10 object-cover rounded-full'
+                className='w-7 h-7 object-cover rounded-full'
               />
             ) : (
               <li className=' hover:underline'>Sign in</li>
-            )} */}
+            )}
           </Link>
         </ul>
       </div>
