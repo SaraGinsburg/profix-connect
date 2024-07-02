@@ -157,11 +157,21 @@ const Profile = () => {
       setUserListings((prev) => prev.filter((l) => l._id !== listingId));
     } catch (error) {
       console.log(error.message);
-      next(error);
     }
-    const data = await res.json();
   };
 
+  const handleUpdateListing = async (listingId) => {
+    try {
+      const res = await fetch(`/api/listing/update/${listingId}`, {
+        method: 'POST',
+        new: 'true',
+      });
+      const data = res.json();
+    } catch (error) {
+      console.log(error.message);
+      next(error);
+    }
+  };
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7 text-slate-500'>
@@ -279,10 +289,11 @@ const Profile = () => {
                   className='text-orange-400 uppercase text-sm hover:underline'>
                   Delete
                 </button>
-                <Link to={`/listing/${listing._id}`}></Link>
-                <button className='text-customGreen uppercase text-sm'>
-                  edit
-                </button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button className='text-customGreen uppercase text-sm'>
+                    edit
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
