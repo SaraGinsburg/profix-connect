@@ -35,7 +35,6 @@ const UpdateListing = () => {
       const listingId = params.listingId;
       const res = await fetch(`/api/listing/get/${listingId}`);
       const data = await res.json();
-      console.log('data', data);
       if (data.success === false) {
         console.log(data.message);
         return;
@@ -329,7 +328,7 @@ const UpdateListing = () => {
           <button
             disabled={loading || uploading}
             className=' rounded-lg p-3 bg-slate-500 text-white uppercase hover:opacity-80 disabled:opacity-50'>
-            {loading ? 'Updating...' : 'Update the Listing'}
+            {loading ? 'Updating...' : 'Update Listing'}
           </button>
         </div>
 
