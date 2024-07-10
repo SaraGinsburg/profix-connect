@@ -24,6 +24,7 @@ const UpdateListing = () => {
     backgroundChecked: false,
     numberOfEmployees: 1,
     yearsInBusiness: 0,
+    contactInfo: { phone: '', email: '' },
   });
   const [imageUploadError, setImageUploadError] = useState('');
   const [uploading, setUploading] = useState(false);
