@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
@@ -19,9 +20,8 @@ const Listing = () => {
   const [error, setError] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [contact, setContact] = useState(false);
-
   const params = useParams();
-
+  const { currentUser } = useSelector((state) => state.user);
   useEffect(() => {
     const fetchListing = async () => {
       try {
@@ -95,7 +95,7 @@ const Listing = () => {
           )}
           <div className='flex flex-col justify-center max-w-4xl mx-auto p-3 my-7 gap-4'>
             <p className='text-2xl font-semibold text-slate-600'>
-              {listing.name} -{listing.field}
+              {listing.name} - {listing.field}
             </p>
             <p className='flex items-center gap-2 mt-4 text-slate-600 text-sm '>
               <FaMapMarkerAlt className=' text-customGreen' />
@@ -108,7 +108,7 @@ const Listing = () => {
               </span>
               {listing.description}
             </p>
-            <ul className='text-customDarkGreen font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-10'>
+            <ul className='text-customDarkGreen  font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
               <li className='flex gap-1 items-center whitespace-nowrap '>
                 <RiCoinsFill className='text-lg text-customGreen' />
                 <span className='text-slate-600'>Consultation:</span>
@@ -142,14 +142,14 @@ const Listing = () => {
                 </p>
               </li>
             </ul>
-            <div className='flex justify-center my-10'>
+            {currentUser && currentUser._id !== listing.userRef && !contact && (
               <button
                 onClick={() => setContact(true)}
-                className='bg-slate-400 text-slate-200 w-full max-w-[417px] text-center rounded-lg uppercase hover:opacity-80 p-2'>
+                className='bg-slate-400 text-slate-200   text-center rounded-lg uppercase hover:opacity-80 p-3'>
                 Contact Expert
               </button>
-              {contact && <Contact listing={listing} />}
-            </div>
+            )}
+            {contact && <Contact listing={listing} />}
           </div>
         </div>
       )}
