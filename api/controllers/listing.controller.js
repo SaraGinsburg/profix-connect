@@ -79,3 +79,39 @@ export const getListing = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getListings = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 9;
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const searchTerm = req.query.searchTerm || '';
+    const sort = req.query.sort || 'createdAt';
+    const order = req.query.order || 'desc';
+    const locations = req.query.locations ? req.query.locations.split(',') : [];
+
+    const query = { field: { $regex: searchTerm, $options: 'i' } };
+
+    if (locations.length > 0) {
+      query.locationServed = { $in: locations };
+    }
+
+    const listings = await Listing.find(query)
+      .sort({ [sort]: order })
+      .limit(limit)
+      .skip(startIndex);
+
+    const total = await Listing.countDocuments(query);
+
+    return res.status(200).json({
+      listings,
+      pagination: {
+        total,
+        limit,
+        startIndex,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
