@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Contact = ({ listing }) => {
   const [expert, setExpert] = useState(null);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setMessage(e.target.value);
@@ -42,13 +43,16 @@ const Contact = ({ listing }) => {
             value={message}
             placeholder='Enter your message here'
             onChange={handleChange}></textarea>
-          <Link
-            to={`mailto:${expert.email}?subject=Regarding ${
+          <a
+            href={`mailto:${expert.email}?subject=Regarding ${
               listing.name
             }&body=${encodeURIComponent(message)}`}
-            className='bg-slate-400 text-slate-200 text-center p-3 uppercase rounded-lg hover:opacity-80 hover:bg-customGreen'>
+            className='bg-slate-400 text-slate-200 text-center p-3 uppercase rounded-lg hover:opacity-80 hover:bg-customGreen'
+            onClick={() => {
+              navigate('/');
+            }}>
             Send Message
-          </Link>
+          </a>
         </div>
       )}
     </>
