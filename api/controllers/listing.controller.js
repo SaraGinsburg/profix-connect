@@ -115,3 +115,20 @@ export const getListings = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getFieldsOfExpertise = async (req, res, next) => {
+  try {
+    const fields = await Listing.distinct('field');
+    return res.status(200).json(fields);
+  } catch (error) {
+    next(error);
+  }
+};
+export const getLocationsServed = async (req, res, next) => {
+  try {
+    const locations = await Listing.distinct('locationServed');
+    return res.status(200).json(locations);
+  } catch (error) {
+    next(error);
+  }
+};
