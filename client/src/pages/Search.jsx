@@ -3,20 +3,20 @@ import { useNavigate } from 'react-router-dom';
 
 const Search = () => {
   const navigate = useNavigate();
-  const [sidebarData, setSidebarData] = useState({
-    searchTerm: ' ',
-    field: '',
-    location: '',
-  });
-  const [searchTerm, setSearchTerm] = useState('');
+
   const [fields, setFields] = useState([]);
-  const [selectedField, setSelectedField] = useState('');
   const [locations, setLocations] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedField, setSelectedField] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
+  const [listing, setListing] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // const urlParams = new URLSearchParams();
-    // const urlParams = new URLSearchParams(location.search);
+    const urlParams = new URLSearchParams(window.location.search);
+    setSearchTerm(urlParams.get('searchTerm') || '');
+    setSelectedField(urlParams.get('field') || '');
+    setSelectedLocation(urlParams.get('location' || ''));
 
     const fetchFields = async () => {
       try {
@@ -39,10 +39,26 @@ const Search = () => {
       }
     };
     fetchLocations();
-  }, []);
+
+    const fetchListings = async () => {
+      setLoading(true);
+      const searchQuery = urlParams.toString();
+      const res = await fetch(`/api/listing/get?${searchQuery}`);
+      const data = await res.json();
+      setListings(data);
+      setLoading(false);
+    };
+    fetchListings();
+  }, [window.location.search]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const urlParams = new URLSearchParams();
+    urlParams.set('searchTerm', searchTerm || '');
+    urlParams.set('field', selectedField || '');
+    urlParams.set('location', selectedLocation || '');
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
   };
 
   return (
@@ -56,7 +72,6 @@ const Search = () => {
               </label>
               <input
                 type='text'
-                id='searchTerm'
                 placeholder='Search...'
                 className='border bg-slate-25 rounded-lg p-3 w-full focus:customGreen focus:outline-customGreen'
                 value={searchTerm}
