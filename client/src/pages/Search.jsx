@@ -9,15 +9,12 @@ const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedField, setSelectedField] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [listing, setListing] = useState([]);
+  const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    setSearchTerm(urlParams.get('searchTerm') || '');
-    setSelectedField(urlParams.get('field') || '');
-    setSelectedLocation(urlParams.get('location' || ''));
+  console.log('listings', listings);
 
+  useEffect(() => {
     const fetchFields = async () => {
       try {
         const res = await fetch('/api/listing/fields');
@@ -39,6 +36,13 @@ const Search = () => {
       }
     };
     fetchLocations();
+  }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    setSearchTerm(urlParams.get('searchTerm') || '');
+    setSelectedField(urlParams.get('field') || '');
+    setSelectedLocation(urlParams.get('location') || '');
 
     const fetchListings = async () => {
       setLoading(true);
@@ -82,13 +86,11 @@ const Search = () => {
               <div className='flex gap-3 items-center'>
                 <label className='font-semibold'>Expertise:</label>
                 <select
-                  value={selectedField}
+                  value={selectedField || ''}
                   onChange={(e) => setSelectedField(e.target.value)}
                   className='border rounded-lg p-3 focus:outline-none focus:ring-1
                    focus:ring-customGreen custom-select w-58'>
-                  <option value='' disabled>
-                    Select an Expertise
-                  </option>
+                  <option value=''>Select an Expertise</option>
                   {fields.map((field) => (
                     <option className='p-3' key={field} value={field}>
                       {' '}
@@ -100,11 +102,11 @@ const Search = () => {
               <div className='flex gap-3 items-center'>
                 <label className='font-semibold'>Location:</label>
                 <select
-                  value={selectedLocation}
+                  value={selectedLocation || ''}
                   onChange={(e) => setSelectedLocation(e.target.value)}
                   className='border rounded-lg p-3 focus:outline-none focus:ring-1
                    focus:ring-customGreen custom-select w-58'>
-                  <option value='' disabled className='px-9 '>
+                  <option value='' className='px-9 '>
                     Select a Location
                   </option>
                   {locations.map((location) => (

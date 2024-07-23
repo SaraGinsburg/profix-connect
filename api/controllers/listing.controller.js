@@ -85,18 +85,30 @@ export const getListings = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
     const searchTerm = req.query.searchTerm || '';
-    const sort = req.query.sort || 'createdAt';
-    const order = req.query.order || 'desc';
-    const locations = req.query.locations ? req.query.locations.split(',') : [];
+    const location = req.query.location || '';
+    const field = req.query.field || '';
 
-    const query = { field: { $regex: searchTerm, $options: 'i' } };
+    // const query = { field: { $regex: searchTerm, $options: 'i' } };
+    const query = {};
 
-    if (locations.length > 0) {
-      query.locationServed = { $in: locations };
+    if (searchTerm) {
+      query.$or = [
+        { field: { $regex: searchTerm, $options: 'i' } },
+        { name: { $regex: searchTerm, $options: 'i' } },
+        { description: { $regex: searchTerm, $options: 'i' } },
+      ];
+    }
+
+    if (location) {
+      query.locationServed = { $in: [location] };
+    }
+
+    if (field) {
+      query.field = field;
     }
 
     const listings = await Listing.find(query)
-      .sort({ [sort]: order })
+
       .limit(limit)
       .skip(startIndex);
 
