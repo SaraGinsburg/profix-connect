@@ -2,6 +2,59 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
 
+const states = [
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+  'Massachusetts',
+  'Michigan',
+  'Minnesota',
+  'Mississippi',
+  'Missouri',
+  'Montana',
+  'Nebraska',
+  'Nevada',
+  'New Hampshire',
+  'New Jersey',
+  'New Mexico',
+  'New York',
+  'North Carolina',
+  'North Dakota',
+  'Ohio',
+  'Oklahoma',
+  'Oregon',
+  'Pennsylvania',
+  'Rhode Island',
+  'South Carolina',
+  'South Dakota',
+  'Tennessee',
+  'Texas',
+  'Utah',
+  'Vermont',
+  'Virginia',
+  'Washington',
+  'West Virginia',
+  'Wisconsin',
+  'Wyoming',
+];
+
 const SignUp = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -51,6 +104,36 @@ const SignUp = () => {
           id='username'
           onChange={handleChange}
         />
+        <input
+          type='text'
+          placeholder='street'
+          className='border p-3 rounded-lg'
+          id='street'
+          onChange={handleChange}
+        />
+        <div className='flex '>
+          <input
+            type='text'
+            placeholder='city'
+            className='border p-3 rounded-lg'
+            id='city'
+            onChange={handleChange}
+          />
+          <input
+            type='text'
+            placeholder='state'
+            className='border p-3 rounded-lg'
+            id='state'
+            onChange={handleChange}
+          />
+          <input
+            type='text'
+            placeholder='zip'
+            className='border p-3 rounded-lg'
+            id='zip'
+            onChange={handleChange}
+          />
+        </div>
         <input
           type='email'
           placeholder='email'

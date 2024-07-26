@@ -9,7 +9,8 @@ import { FaMapMarkerAlt, FaShare } from 'react-icons/fa';
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { ImWrench } from 'react-icons/im';
 import { MdEditCalendar } from 'react-icons/md';
-import { FaRegAddressBook } from 'react-icons/fa';
+import { FaPhoneAlt } from 'react-icons/fa';
+import { MdEmail } from 'react-icons/md';
 import { RiCoinsFill } from 'react-icons/ri';
 import Contact from '../components/Contact';
 
@@ -19,19 +20,24 @@ const Listing = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [expert, setExpert] = useState(null);
   const [contact, setContact] = useState(false);
   const params = useParams();
   const { currentUser } = useSelector((state) => state.user);
+  console.log('params', params);
+
   useEffect(() => {
     const fetchListing = async () => {
       try {
         setLoading(true);
         const res = await fetch(`/api/listing/get/${params.listingId}`);
+        console.log('Response status:', res.status); // Log status
         const data = await res.json();
-        if (data.success === false) {
+        console.log('Response data:', data); // Log response data
+
+        if (!res.ok) {
           setError(true);
-          setLoading(false);
-          console.log('data.message', data.message);
+          console.log('error.message', data.message);
           return;
         }
         setListing(data);
@@ -39,12 +45,31 @@ const Listing = () => {
         setError(false);
       } catch (error) {
         setError(true);
-        setLoading(false);
         console.log(error.message);
       }
     };
     fetchListing();
   }, [params.listingId]);
+
+  useEffect(() => {
+    if (listing) {
+      const fetchExpert = async () => {
+        try {
+          const { userRef } = listing;
+          const res = await fetch(`/api/user/${userRef}`);
+          const data = await res.json();
+          setExpert(data);
+        } catch (error) {
+          console.error('Error fetching expert:', error.message);
+        }
+      };
+      fetchExpert();
+    }
+  }, [listing]);
+
+  console.log('Listing:', listing);
+  console.log('Expert:', expert);
+
   return (
     <main>
       {loading && (
@@ -97,16 +122,34 @@ const Listing = () => {
             <p className='text-2xl font-semibold text-slate-600'>
               {listing.name} - {listing.field}
             </p>
-            <p className='flex items-center gap-2 mt-4 text-slate-600 text-sm '>
-              <FaMapMarkerAlt className=' text-customGreen' />
-              {listing.address}
-            </p>
+            <div className='flex flex-row gap-6'>
+              {expert && expert.street && expert.city && (
+                <p className='flex items-center gap-1 mt-4 text-slate-600 text-sm '>
+                  <FaMapMarkerAlt className=' text-customGreen' />
+                  {expert.street}, {expert.city}
+                  {expert.state ? `, ${expert.state}` : ''}
+                </p>
+              )}
+
+              {expert && expert.email && (
+                <p className='flex items-center gap-1 mt-4 text-slate-600 text-sm '>
+                  <MdEmail className=' text-customGreen' />
+                  {expert.email}
+                </p>
+              )}
+              {expert && expert.phone && (
+                <p className='flex items-center gap-1 mt-4 text-slate-600 text-sm '>
+                  <FaPhoneAlt className=' text-customGreen' />
+                  {expert.phone}
+                </p>
+              )}
+            </div>
 
             <p className='text-slate-600'>
-              <span className='font-semibold text-slate-800'>
+              <span className='font-semibold text-slate-600'>
                 Description -{' '}
               </span>
-              {listing.description}
+              <span className='text-slate-500'>{listing.description}</span>
             </p>
             <ul className='text-customDarkGreen  font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
               <li className='flex gap-1 items-center whitespace-nowrap '>

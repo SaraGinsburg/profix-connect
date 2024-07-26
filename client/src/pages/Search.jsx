@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ListingItem from '../components/ListingItem';
 
 const Search = () => {
   const navigate = useNavigate();
@@ -11,9 +12,9 @@ const Search = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
-  console.log('listings', listings);
-
+  console.log(listings);
   useEffect(() => {
     const fetchFields = async () => {
       try {
@@ -46,12 +47,21 @@ const Search = () => {
 
     const fetchListings = async () => {
       setLoading(true);
+      setShowMore(false);
       const searchQuery = urlParams.toString();
-      const res = await fetch(`/api/listing/get?${searchQuery}`);
-      const data = await res.json();
-      setListings(data);
+      try {
+        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const data = await res.json();
+        const listingsData = Array.isArray(data.listings) ? data.listings : [];
+        setListings(listingsData);
+        setShowMore(listingsData.length > 8);
+      } catch (error) {
+        console.error('Error fetching listings:', error);
+        setListings([]);
+      }
       setLoading(false);
     };
+
     fetchListings();
   }, [window.location.search]);
 
@@ -90,7 +100,7 @@ const Search = () => {
                   onChange={(e) => setSelectedField(e.target.value)}
                   className='border rounded-lg p-3 focus:outline-none focus:ring-1
                    focus:ring-customGreen custom-select w-58'>
-                  <option value=''>Select an Expertise</option>
+                  <option value=''>All Professions</option>
                   {fields.map((field) => (
                     <option className='p-3' key={field} value={field}>
                       {' '}
@@ -107,7 +117,7 @@ const Search = () => {
                   className='border rounded-lg p-3 focus:outline-none focus:ring-1
                    focus:ring-customGreen custom-select w-58'>
                   <option value='' className='px-9 '>
-                    Select a Location
+                    All Locations
                   </option>
                   {locations.map((location) => (
                     <option className='p-3' key={location} value={location}>
@@ -126,10 +136,32 @@ const Search = () => {
         </form>
       </div>
 
-      <div className=''>
+      <div className='flex-1'>
         <h1 className='text-3xl font-semibold text-slate-500 border-b p-3 mt-5'>
           Listings:
         </h1>
+        <div className='p-7 flex flex-wrap gap-4'>
+          {!loading && listings.length === 0 && (
+            <p className='text-xl text-slate-500'>No listing found!</p>
+          )}
+          {loading && (
+            <p className='text-xl text-slate-500 text-center w-full'>
+              loading...
+            </p>
+          )}
+          {!loading &&
+            listings &&
+            listings.map((listing) => (
+              <ListingItem key={listing._id} listing={listing} />
+            ))}
+          {/* {showMore && (
+            <button
+              // onClick={onShowMoreClick}
+              className='text-customGreen hover:underline p-7 text-left w-full'>
+              show more
+            </button>
+          )} */}
+        </div>
       </div>
     </div>
   );
