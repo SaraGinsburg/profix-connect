@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ListingItem from '../components/ListingItem';
 
 const Search = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [fields, setFields] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -73,6 +74,17 @@ const Search = () => {
     urlParams.set('location', selectedLocation || '');
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
+  };
+
+  const onShowMoreClick = async () => {
+    const urlParams = new URLSearchParams(location.search);
+    const startIndex = listings.length;
+    urlParams.set('startIndex', startIndex);
+    const searchQuery = urlParams.toString();
+    const res = await fetch(`/api/listing/get?${searchQuery}`);
+    const data = await res.json();
+    setShowMore(data.listings.length > 8);
+    setListings([...listings, ...data.listings]);
   };
 
   return (
@@ -154,13 +166,13 @@ const Search = () => {
             listings.map((listing) => (
               <ListingItem key={listing._id} listing={listing} />
             ))}
-          {/* {showMore && (
+          {showMore && (
             <button
-              // onClick={onShowMoreClick}
+              onClick={onShowMoreClick}
               className='text-customGreen hover:underline p-7 text-left w-full'>
               show more
             </button>
-          )} */}
+          )}
         </div>
       </div>
     </div>
