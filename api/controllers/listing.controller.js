@@ -138,6 +138,31 @@ export const getFieldsOfExpertise = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getDistinctFieldListings = async (req, res, next) => {
+  debugger;
+  try {
+    const distinctFieldListings = await Listing.aggregate([
+      {
+        $match: { featuredWork: { $exists: true, $ne: [] } }, // Ensure featuredWork is not empty
+      },
+      {
+        $group: {
+          _id: '$field',
+          listing: { $first: '$$ROOT' },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: '$listing' },
+      },
+    ]);
+
+    return res.status(200).json({ listings: distinctFieldListings });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getLocationsServed = async (req, res, next) => {
   try {
     const locations = await Listing.distinct('locationServed');

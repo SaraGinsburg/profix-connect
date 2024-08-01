@@ -11,23 +11,30 @@ const Home = () => {
   const [filteredListings, setFilteredListings] = useState([]);
 
   useEffect(() => {
-    const fetchRandomListings = async () => {
+    const fetchDistinctFieldListings = async () => {
       try {
-        const res = await fetch('/api/listing/get?limit=15');
+        const res = await fetch('/api/listing/distinct');
         const data = await res.json();
-        const filtered = data.listings.filter(
-          (listing) => listing.featuredWork && listing.featuredWork.length > 0
-        );
-        setFilteredListings(filtered);
+
+        // const validListings = data.listings.filter(
+        //   (listing) => listing.featuredWork && listing.featuredWork.length > 0
+        // );
+
+        setFilteredListings(data.listings);
+        // setFilteredListings(validListings);
       } catch (error) {
         console.log('error fetching listing:', error.message);
       }
     };
-    fetchRandomListings();
+    fetchDistinctFieldListings();
   }, []);
+
   console.log('filteredListings', filteredListings);
-  const urls = filteredListings.map((l) => l.featuredWork[0]);
-  console.log('urls', urls);
+  const urls = filteredListings.map((l) => ({
+    image: l.featuredWork[0],
+    field: l.field,
+  }));
+
   return (
     <div className='flex flex-col p-14 px-8 gap-6 max-w-5xl mx-auto ml-8 mt-8'>
       <div className=''>
@@ -58,14 +65,23 @@ const Home = () => {
               '--swiper-pagination-color': '#809e88',
               '--swiper-navigation-color': '#809e88',
             }}>
-            {urls.map((url) => (
-              <SwiperSlide key={url}>
+            {urls.map((url, index) => (
+              <SwiperSlide key={index}>
                 <div
-                  className='h-[400px]'
+                  className='relative h-[400px]'
                   style={{
-                    background: `url(${url}) center no-repeat`,
+                    background: `url(${url.image}) center no-repeat`,
                     backgroundSize: 'cover',
-                  }}></div>
+                  }}>
+                  <div
+                    className='absolute left-0 right-0 text-slate-400 text-center p-2'
+                    style={{
+                      bottom: '10px',
+                    }}>
+                    {' '}
+                    {url.field}
+                  </div>
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
